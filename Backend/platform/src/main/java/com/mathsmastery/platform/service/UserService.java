@@ -1,7 +1,7 @@
-package com.platform.service;
+package com.mathsmastery.platform.service;
 
-import com.platform.model.User;
-import com.platform.repository.UserRepository;
+import com.mathsmastery.platform.model.User;
+import com.mathsmastery.platform.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

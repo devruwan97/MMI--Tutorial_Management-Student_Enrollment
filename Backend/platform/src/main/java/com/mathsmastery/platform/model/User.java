@@ -1,8 +1,12 @@
-package com.platform.model;
+package com.mathsmastery.platform.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "users")
 public class User {
 
@@ -15,7 +19,8 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    private String password;
+    @Column(name = "password_hash")
+    private String passwordHash;
 
     private String role;
 }
