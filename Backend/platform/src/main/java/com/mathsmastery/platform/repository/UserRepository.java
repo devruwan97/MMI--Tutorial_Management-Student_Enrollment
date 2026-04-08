@@ -1,6 +1,6 @@
-package com.platform.repository;
+package com.mathsmastery.platform.repository;
 
-import com.platform.model.User;
+import com.mathsmastery.platform.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
