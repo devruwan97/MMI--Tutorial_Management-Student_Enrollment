@@ -32,6 +32,12 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
+    public Course getCourseById(Integer id) {
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Course not found with id: " + id));
+    }
+
+
     public Course updateCourse(Integer id, Course updated) {
         return courseRepository.findById(id)
                 .map(course -> {

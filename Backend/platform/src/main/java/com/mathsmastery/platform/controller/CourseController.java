@@ -44,4 +44,11 @@ public class CourseController {
     public void delete(@PathVariable Integer id) {
         courseService.deleteCourse(id);
     }
+
+    @Operation(summary = "Get course by ID")
+    @GetMapping("/{id}")
+    public Course getById(@PathVariable Integer id) {
+        return courseService.getCourseById(id);
+    }
+
 }
