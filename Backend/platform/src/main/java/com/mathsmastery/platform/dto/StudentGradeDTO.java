@@ -8,9 +8,9 @@ import lombok.Setter;
 public class StudentGradeDTO {
 
     private Long studentId;
-    private Long courseId;
-    private Long unitId;
-    private Long enrollmentId;
+    private Integer courseId;
+    private Integer unitId;
+    private Integer enrollmentId;
     private Double score;
 
 }

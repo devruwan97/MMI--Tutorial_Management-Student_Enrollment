@@ -3,24 +3,26 @@ package com.mathsmastery.platform.service;
 import com.mathsmastery.platform.dto.StudentGradeDTO;
 import com.mathsmastery.platform.model.*;
 import com.mathsmastery.platform.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DurationFormat;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
+@RequiredArgsConstructor
 public class StudentGradeService {
 
-    @Autowired private StudentGradeRepository gradeRepository;
-    @Autowired private StudentRepository studentRepository;
-    @Autowired private CourseRepository courseRepository;
-    @Autowired private UnitRepository unitRepository;
-    @Autowired private EnrollmentRepository enrollmentRepository;
-    @Autowired private TeacherRepository teacherRepository;
-    @Autowired private GradeMasterRepository gradeMasterRepository;
+    private final StudentGradeRepository gradeRepository;
+    private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
+    private final UnitRepository unitRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final TeacherRepository teacherRepository;
+    private final GradeMasterRepository gradeMasterRepository;
 
-    // 👨‍🏫 ADD RESULT
-    public StudentGrade addResult(StudentGradeDTO dto, Long teacherId) {
+    public StudentGrade addResult(StudentGradeDTO dto, Integer teacherId) {
 
         Student student = studentRepository.findById(dto.getStudentId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
@@ -28,7 +30,7 @@ public class StudentGradeService {
         Course course = courseRepository.findById(dto.getCourseId())
                 .orElseThrow(() -> new RuntimeException("Course not found"));
 
-        DurationFormat.Unit unit = unitRepository.findById(dto.getUnitId())
+        Unit unit = unitRepository.findById(dto.getUnitId())
                 .orElseThrow(() -> new RuntimeException("Unit not found"));
 
         Enrollment enrollment = enrollmentRepository.findById(dto.getEnrollmentId())
@@ -37,8 +39,7 @@ public class StudentGradeService {
         Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
 
-        // 🎯 FIND GRADE BASED ON SCORE
-        GradeMaster gm = gradeMasterRepository
+        GradeMaster gradeMaster = gradeMasterRepository
                 .findByMinScoreLessThanEqualAndMaxScoreGreaterThanEqual(
                         dto.getScore(), dto.getScore())
                 .orElseThrow(() -> new RuntimeException("Grade range not found"));
@@ -50,15 +51,13 @@ public class StudentGradeService {
         grade.setEnrollment(enrollment);
         grade.setTeacher(teacher);
         grade.setScore(dto.getScore());
-        grade.setGradeCode(gm.getGradeCode());
+        grade.setGradeCode(gradeMaster.getGradeCode());
         grade.setGradedAt(LocalDateTime.now());
 
         return gradeRepository.save(grade);
     }
 
-
     public List<StudentGrade> getStudentResults(Long studentId) {
         return gradeRepository.findByStudentId(studentId);
     }
-
 }

@@ -31,7 +31,7 @@ public class StudentGrade {
 
     @ManyToOne
     @JoinColumn(name = "unit_id")
-    private DurationFormat.Unit unit;
+    private Unit unit;
 
     @ManyToOne
     @JoinColumn(name = "enrollment_id")

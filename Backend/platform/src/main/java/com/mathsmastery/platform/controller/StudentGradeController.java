@@ -14,17 +14,17 @@ import java.util.List;
 public class StudentGradeController {
 
     @Autowired
-    private StudentGradeService service;
+    private StudentGradeService studentGradeService;
 
     @PostMapping("/add")
     public StudentGrade addResult(@RequestBody StudentGradeDTO dto,
-                                  @RequestParam Long teacherId) {
-        return service.addResult(dto, teacherId);
+                                  @RequestParam Integer teacherId) {
+        return studentGradeService.addResult(dto, teacherId);
     }
 
     @GetMapping("/student/{studentId}")
     public List<StudentGrade> getResults(@PathVariable Long studentId) {
-        return service.getStudentResults(studentId);
+        return studentGradeService.getStudentResults(studentId);
     }
 
 }
