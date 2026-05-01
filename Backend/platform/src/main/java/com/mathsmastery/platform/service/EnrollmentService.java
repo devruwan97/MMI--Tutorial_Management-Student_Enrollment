@@ -30,7 +30,7 @@ public class EnrollmentService {
 
     public Enrollment createEnrollment(EnrollmentRequest request) {
 
-        Student student = studentRepository.findById(Long.valueOf(request.getStudentId()))
+        Student student = studentRepository.findByUserId(Long.valueOf(request.getStudentId()))
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         Course course = courseRepository.findById(request.getCourseId())

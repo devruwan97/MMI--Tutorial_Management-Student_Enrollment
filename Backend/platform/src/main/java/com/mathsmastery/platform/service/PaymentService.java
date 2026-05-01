@@ -30,7 +30,7 @@ public class PaymentService {
 
     public Payment createPayment(PaymentRequest request) {
 
-        Student student = studentRepository.findById(request.getStudentId())
+        Student student = studentRepository.findByUserId(request.getStudentId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         Enrollment enrollment = enrollmentRepository.findById(Math.toIntExact(request.getEnrollmentId()))
