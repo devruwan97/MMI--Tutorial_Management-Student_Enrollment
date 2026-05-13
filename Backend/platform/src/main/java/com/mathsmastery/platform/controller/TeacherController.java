@@ -53,4 +53,12 @@ public class TeacherController {
     public void delete(@PathVariable Integer id) {
         teacherService.deleteTeacher(id);
     }
+
+    @PostMapping("/{teacherId}/courses/{courseId}")
+    public void assignCourse(
+            @PathVariable Integer teacherId,
+            @PathVariable Integer courseId
+    ) {
+        teacherService.assignCourse(teacherId, courseId);
+    }
 }

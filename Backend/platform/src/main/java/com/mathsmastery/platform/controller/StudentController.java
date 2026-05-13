@@ -39,4 +39,10 @@ public class StudentController {
         studentService.deleteStudent(id);
         return "Student deleted successfully";
     }
+
+    @Operation(summary = "Get students by course ID")
+    @GetMapping("/course/{courseId}")
+    public List<StudentDTO> getStudentsByCourse(@PathVariable Integer courseId) {
+        return studentService.getStudentsByCourseId(courseId);
+    }
 }

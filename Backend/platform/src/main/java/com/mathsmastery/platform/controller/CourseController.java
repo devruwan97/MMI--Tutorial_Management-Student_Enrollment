@@ -51,4 +51,8 @@ public class CourseController {
         return courseService.getCourseById(id);
     }
 
+    @GetMapping("/student/{userId}/courses")
+    public List<Course> getStudentCourses(@PathVariable Integer userId) {
+        return courseService.getCoursesByStudent(userId);}
+
 }

@@ -22,6 +22,12 @@ public class EnrollmentController {
         this.enrollmentService = enrollmentService;
     }
 
+    @Operation(summary = "Get all enrollments")
+    @GetMapping
+    public List<Enrollment> getAll() {
+        return enrollmentService.getAllEnrollments();
+    }
+
     @Operation(summary = "Enroll a student into a course")
     @PostMapping
     public Enrollment create(@RequestBody EnrollmentRequest request) {
@@ -40,7 +46,7 @@ public class EnrollmentController {
         return enrollmentService.getByCourse(courseId);
     }
 
-    @Operation(summary = "Update enrollment status (pending → enrolled/cancelled)")
+    @Operation(summary = "Update enrollment status")
     @PutMapping("/{id}")
     public Enrollment updateStatus(
             @PathVariable Integer id,

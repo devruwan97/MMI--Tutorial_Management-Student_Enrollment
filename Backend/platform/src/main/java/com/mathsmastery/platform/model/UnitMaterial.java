@@ -9,27 +9,22 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "units")
-public class Unit {
+@Table(name = "unit_materials")
+public class UnitMaterial {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "course_id")
-    private Integer courseId;
+    @Column(name = "unit_id")
+    private Integer unitId;
 
     @Column(name = "unit_code")
     private String unitCode;
 
-    @Column(name = "unit_name")
-    private String unitName;
+    private String title;
 
-    private String description;
+    private String url;
 
-    @Column(name = "term_id")
-    private Integer termId;
-
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

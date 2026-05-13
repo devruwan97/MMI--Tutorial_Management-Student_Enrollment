@@ -28,6 +28,10 @@ public class EnrollmentService {
         this.courseRepository = courseRepository;
     }
 
+    public List<Enrollment> getAllEnrollments() {
+        return enrollmentRepository.findAll();
+    }
+
     public Enrollment createEnrollment(EnrollmentRequest request) {
 
         Student student = studentRepository.findByUserId(Long.valueOf(request.getStudentId()))
@@ -57,8 +61,12 @@ public class EnrollmentService {
         return enrollmentRepository.save(enrollment);
     }
 
-    public List<Enrollment> getByStudent(Integer studentId) {
-        return enrollmentRepository.findByStudentId(studentId);
+    public List<Enrollment> getByStudent(Integer userId) {
+
+        Student student = studentRepository.findByUserId(Long.valueOf(userId))
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        return enrollmentRepository.findByStudentId(student.getId());
     }
 
     public List<Enrollment> getByCourse(Integer courseId) {

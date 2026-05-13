@@ -2,12 +2,17 @@ package com.mathsmastery.platform.service;
 
 import com.mathsmastery.platform.dto.TeacherRequest;
 import com.mathsmastery.platform.dto.TeacherResponse;
+import com.mathsmastery.platform.model.Course;
+import com.mathsmastery.platform.model.CourseSchedule;
 import com.mathsmastery.platform.model.Teacher;
 import com.mathsmastery.platform.model.User;
+import com.mathsmastery.platform.repository.CourseRepository;
+import com.mathsmastery.platform.repository.CourseScheduleRepository;
 import com.mathsmastery.platform.repository.TeacherRepository;
 import com.mathsmastery.platform.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,11 +21,19 @@ public class TeacherService {
 
     private final TeacherRepository teacherRepository;
     private final UserRepository userRepository;
+    private final CourseRepository courseRepository;
+    private final CourseScheduleRepository courseScheduleRepository;
 
-    public TeacherService(TeacherRepository teacherRepository,
-                          UserRepository userRepository) {
+    public TeacherService(
+            TeacherRepository teacherRepository,
+            UserRepository userRepository,
+            CourseRepository courseRepository,
+            CourseScheduleRepository courseScheduleRepository
+    ) {
         this.teacherRepository = teacherRepository;
         this.userRepository = userRepository;
+        this.courseRepository = courseRepository;
+        this.courseScheduleRepository = courseScheduleRepository;
     }
 
     public TeacherResponse createTeacher(Integer userId, TeacherRequest request) {
@@ -48,7 +61,7 @@ public class TeacherService {
     }
 
     public TeacherResponse getTeacherById(Integer id) {
-        Teacher teacher = teacherRepository.findById(id)
+        Teacher teacher = teacherRepository.findByUserId(Long.valueOf(id))
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
 
         return mapToResponse(teacher);
@@ -67,6 +80,26 @@ public class TeacherService {
 
     public void deleteTeacher(Integer id) {
         teacherRepository.deleteById(id);
+    }
+
+    public void assignCourse(Integer teacherId, Integer courseId) {
+
+        Teacher teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        CourseSchedule schedule = new CourseSchedule();
+        schedule.setTeacherId(teacher.getId());
+        schedule.setCourseId(course.getId());
+
+        schedule.setDayOfWeek("Monday");
+        schedule.setStartTime(LocalTime.of(9, 0));
+        schedule.setEndTime(LocalTime.of(11, 0));
+        schedule.setLocation("Main Campus");
+
+        courseScheduleRepository.save(schedule);
     }
 
     private TeacherResponse mapToResponse(Teacher teacher) {
