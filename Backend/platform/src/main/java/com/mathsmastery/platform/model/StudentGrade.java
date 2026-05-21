@@ -37,9 +37,7 @@ public class StudentGrade {
     @JoinColumn(name = "enrollment_id")
     private Enrollment enrollment;
 
-    @ManyToOne
-    @JoinColumn(name = "grade_code_id")
-    private GradeCode gradeCode;
+    private String gradeCode;
 
     @ManyToOne
     @JoinColumn(name = "graded_by")

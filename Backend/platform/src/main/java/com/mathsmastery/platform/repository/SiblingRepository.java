@@ -9,5 +9,4 @@ public interface SiblingRepository extends JpaRepository<Sibling, Integer> {
 
     List<Sibling> findByStudentId(Long studentId);
 
-    List<Sibling> findBySiblingGroupId(Integer siblingGroupId);
 }

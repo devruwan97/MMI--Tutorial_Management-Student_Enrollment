@@ -17,11 +17,11 @@ public class AssessmentGrade {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "assessment_id", insertable = false, updatable = false)
+    @JoinColumn(name = "assessment_id")
     private Assessment assessment;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", insertable = false, updatable = false)
+    @JoinColumn(name = "student_id")
     private Student student;
 
     private Double marks;

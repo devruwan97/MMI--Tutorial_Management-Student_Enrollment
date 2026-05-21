@@ -36,7 +36,7 @@ public class AssessmentService {
         for (Assessment a : assessments) {
 
             List<AssessmentGrade> grades =
-                    gradeRepository.findByAssessmentId(a.getId());
+                    gradeRepository.findByAssessment_Id(a.getId());
 
             List<AssessmentGradeDTO> gradeDTOs = new ArrayList<>();
 
@@ -78,7 +78,7 @@ public class AssessmentService {
         Assessment a = optional.get();
 
         List<AssessmentGrade> grades =
-                gradeRepository.findByAssessmentId(a.getId());
+                gradeRepository.findByAssessment_Id(a.getId());
 
         List<AssessmentGradeDTO> gradeDTOs = new ArrayList<>();
 

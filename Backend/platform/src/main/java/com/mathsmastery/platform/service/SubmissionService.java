@@ -25,16 +25,17 @@ public class SubmissionService {
         List<SubmissionDTO> result = new ArrayList<>();
 
         for (Submission s : submissions) {
+
             SubmissionDTO dto = new SubmissionDTO();
 
             dto.setId(s.getId());
             dto.setAssessmentId(s.getAssessment().getId());
             dto.setStudentId(s.getStudent().getId());
             dto.setStudentName(s.getStudent().getUser().getName());
-
             dto.setFileName(s.getFileName());
             dto.setFileUrl(s.getFileUrl());
             dto.setSubmittedAt(s.getSubmittedAt());
+            dto.setStatus(s.getStatus() != null ? s.getStatus().name() : "PENDING");
 
             result.add(dto);
         }
@@ -50,6 +51,37 @@ public class SubmissionService {
         List<SubmissionDTO> result = new ArrayList<>();
 
         for (Submission s : submissions) {
+
+            SubmissionDTO dto = new SubmissionDTO();
+
+            dto.setId(s.getId());
+            dto.setAssessmentId(s.getAssessment().getId());
+            dto.setStudentId(s.getStudent().getId());
+            dto.setStudentName(s.getStudent().getUser().getName());
+            dto.setFileName(s.getFileName());
+            dto.setFileUrl(s.getFileUrl());
+            dto.setSubmittedAt(s.getSubmittedAt());
+
+            dto.setStatus(s.getStatus() != null ? s.getStatus().name() : "PENDING");
+
+            result.add(dto);
+        }
+
+        return result;
+    }
+
+    public List<SubmissionDTO> getPendingByAssessment(Integer assessmentId) {
+
+        List<Submission> submissions =
+                submissionRepository.findByAssessmentIdAndStatus(
+                        assessmentId,
+                        Submission.Status.PENDING
+                );
+
+        List<SubmissionDTO> result = new ArrayList<>();
+
+        for (Submission s : submissions) {
+
             SubmissionDTO dto = new SubmissionDTO();
 
             dto.setId(s.getId());
@@ -61,27 +93,36 @@ public class SubmissionService {
             dto.setFileUrl(s.getFileUrl());
             dto.setSubmittedAt(s.getSubmittedAt());
 
+            dto.setStatus(s.getStatus() != null ? s.getStatus().name() : "PENDING");
+
             result.add(dto);
         }
 
         return result;
     }
 
-    public List<SubmissionDTO> getPendingByAssessment(Integer assessmentId) {
+    public List<SubmissionDTO> getGradedByAssessment(Integer assessmentId) {
 
         List<Submission> submissions =
-                submissionRepository.findByAssessmentIdAndStatus(assessmentId, "PENDING");
+                submissionRepository.findByAssessmentIdAndStatus(
+                        assessmentId,
+                        Submission.Status.GRADED
+                );
 
         List<SubmissionDTO> result = new ArrayList<>();
 
         for (Submission s : submissions) {
+
             SubmissionDTO dto = new SubmissionDTO();
+
             dto.setId(s.getId());
             dto.setAssessmentId(s.getAssessment().getId());
             dto.setStudentId(s.getStudent().getId());
+            dto.setStudentName(s.getStudent().getUser().getName());
+            dto.setFileName(s.getFileName());
             dto.setFileUrl(s.getFileUrl());
-            dto.setStatus(s.getStatus());
             dto.setSubmittedAt(s.getSubmittedAt());
+            dto.setStatus(s.getStatus() != null ? s.getStatus().name() : "GRADED");
             result.add(dto);
         }
 

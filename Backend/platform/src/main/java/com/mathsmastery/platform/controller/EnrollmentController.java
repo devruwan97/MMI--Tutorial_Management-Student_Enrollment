@@ -3,10 +3,8 @@ package com.mathsmastery.platform.controller;
 import com.mathsmastery.platform.dto.EnrollmentRequest;
 import com.mathsmastery.platform.model.Enrollment;
 import com.mathsmastery.platform.service.EnrollmentService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,16 +44,7 @@ public class EnrollmentController {
         return enrollmentService.getByCourse(courseId);
     }
 
-    @Operation(summary = "Update enrollment status")
-    @PutMapping("/{id}")
-    public Enrollment updateStatus(
-            @PathVariable Integer id,
-            @RequestParam String status
-    ) {
-        return enrollmentService.updateStatus(id, status);
-    }
-
-    @Operation(summary = "Delete an enrollment")
+    @Operation(summary = "Delete enrollment")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         enrollmentService.delete(id);

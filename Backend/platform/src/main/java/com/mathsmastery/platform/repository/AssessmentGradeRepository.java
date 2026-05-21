@@ -10,16 +10,16 @@ import java.util.Optional;
 @Repository
 public interface AssessmentGradeRepository extends JpaRepository<AssessmentGrade, Integer> {
 
-    List<AssessmentGrade> findByAssessmentId(Integer assessmentId);
+    List<AssessmentGrade> findByAssessment_Id(Integer assessmentId);
 
-    List<AssessmentGrade> findByStudentId(Integer studentId);
+    List<AssessmentGrade> findByStudent_Id(Integer studentId);
 
-    Optional<AssessmentGrade> findByAssessmentIdAndStudentId(
+    Optional<AssessmentGrade> findByAssessment_IdAndStudent_Id(
             Integer assessmentId,
             Integer studentId
     );
 
-    boolean existsByAssessmentIdAndStudentId(
+    boolean existsByAssessment_IdAndStudent_Id(
             Integer assessmentId,
             Integer studentId
     );

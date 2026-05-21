@@ -28,7 +28,13 @@ public class Submission {
 
     private String fileUrl;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     private LocalDateTime submittedAt;
+
+    public enum Status {
+        PENDING,
+        GRADED
+    }
 }

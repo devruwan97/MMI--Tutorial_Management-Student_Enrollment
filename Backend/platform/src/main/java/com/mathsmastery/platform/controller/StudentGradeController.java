@@ -1,9 +1,10 @@
 package com.mathsmastery.platform.controller;
 
 import com.mathsmastery.platform.dto.StudentGradeDTO;
+import com.mathsmastery.platform.dto.UnitFinalGradeDTO;
 import com.mathsmastery.platform.model.StudentGrade;
 import com.mathsmastery.platform.service.StudentGradeService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,11 @@ public class StudentGradeController {
     @GetMapping("/student/{studentId}")
     public List<StudentGrade> getResults(@PathVariable Long studentId) {
         return studentGradeService.getStudentResults(studentId);
+    }
+
+    @GetMapping("/unit/{unitId}/final")
+    public List<UnitFinalGradeDTO> getFinalGrades(@PathVariable Integer unitId) {
+        return studentGradeService.getFinalGradesByUnit(unitId);
     }
 
 }

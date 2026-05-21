@@ -5,6 +5,7 @@ import com.mathsmastery.platform.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,9 +26,33 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @Operation(summary = "Get all users")
+    @Operation(summary = "Bulk upload users via Excel")
+    @PostMapping(value = "/bulk", consumes = "multipart/form-data")
+    public List<User> bulkUpload(@RequestParam("file") MultipartFile file) {
+        return userService.bulkCreateFromExcel(file);
+    }
+
     @GetMapping
     public List<User> getAll() {
         return userService.getAllUsers();
+    }
+
+    @GetMapping("/{userId}")
+    public User getUserById(@PathVariable Integer userId) {
+        return userService.getUserById(userId);
+    }
+
+    @PutMapping("/{userId}")
+    public User updateUser(
+            @PathVariable Integer userId,
+            @RequestBody User updatedUser
+    ) {
+        return userService.updateUser(userId, updatedUser);
+    }
+
+    @DeleteMapping("/{userId}")
+    public String deleteUser(@PathVariable Integer userId) {
+        userService.deleteUser(userId);
+        return "User deleted successfully";
     }
 }

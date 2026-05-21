@@ -44,4 +44,13 @@ public class SubmissionController {
                 submissionService.getPendingByAssessment(assessmentId)
         );
     }
+
+    @GetMapping("/assessment/{assessmentId}/graded")
+    public ResponseEntity<List<SubmissionDTO>> getGradedSubmissions(
+            @PathVariable Integer assessmentId
+    ) {
+        return ResponseEntity.ok(
+                submissionService.getGradedByAssessment(assessmentId)
+        );
+    }
 }

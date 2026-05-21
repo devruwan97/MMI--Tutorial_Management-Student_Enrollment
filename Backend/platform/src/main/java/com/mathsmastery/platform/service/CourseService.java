@@ -1,13 +1,7 @@
 package com.mathsmastery.platform.service;
 
-import com.mathsmastery.platform.model.Course;
-import com.mathsmastery.platform.model.Enrollment;
-import com.mathsmastery.platform.model.Student;
-import com.mathsmastery.platform.model.User;
-import com.mathsmastery.platform.repository.CourseRepository;
-import com.mathsmastery.platform.repository.EnrollmentRepository;
-import com.mathsmastery.platform.repository.StudentRepository;
-import com.mathsmastery.platform.repository.UserRepository;
+import com.mathsmastery.platform.model.*;
+import com.mathsmastery.platform.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,17 +13,19 @@ public class CourseService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final CourseTeacherRepository courseTeacherRepository;
 
     public CourseService(
             CourseRepository courseRepository,
             UserRepository userRepository,
             StudentRepository studentRepository,
-            EnrollmentRepository enrollmentRepository
+            EnrollmentRepository enrollmentRepository, TeacherRepository teacherRepository, CourseTeacherRepository courseTeacherRepository
     ) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.courseTeacherRepository = courseTeacherRepository;
     }
 
     public Course createCourse(Integer userId, Course course) {
@@ -59,6 +55,17 @@ public class CourseService {
 
         return enrollments.stream()
                 .map(Enrollment::getCourse)
+                .toList();
+    }
+
+    public List<Course> getCoursesByTeacher(Integer teacherId) {
+
+        List<CourseTeacher> assignments =
+                courseTeacherRepository.findByTeacherId(Long.valueOf(teacherId));
+
+        return assignments.stream()
+                .map(CourseTeacher::getCourse)
+                .distinct()
                 .toList();
     }
 

@@ -55,4 +55,10 @@ public class CourseController {
     public List<Course> getStudentCourses(@PathVariable Integer userId) {
         return courseService.getCoursesByStudent(userId);}
 
+    @GetMapping("/teacher/{teacherId}/courses")
+    @Operation(summary = "Get all courses assigned to a teacher")
+    public List<Course> getTeacherCourses(@PathVariable Integer teacherId) {
+        return courseService.getCoursesByTeacher(teacherId);
+    }
+
 }

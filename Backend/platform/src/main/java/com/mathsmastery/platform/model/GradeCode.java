@@ -22,5 +22,4 @@ public class GradeCode {
     private Boolean isPass;
     private Boolean affectsGpa;
 
-    // getters & setters
 }

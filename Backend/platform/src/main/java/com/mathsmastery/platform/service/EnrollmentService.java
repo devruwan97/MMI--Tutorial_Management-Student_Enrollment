@@ -44,12 +44,12 @@ public class EnrollmentService {
                 student.getId(),
                 course.getId()
         ).ifPresent(e -> {
-            throw new RuntimeException("Student already enrolled in this course");
+            throw new RuntimeException("Already enrolled in this course");
         });
 
-        long currentCount = enrollmentRepository.findByCourseId(course.getId()).size();
+        long count = enrollmentRepository.findByCourseId(course.getId()).size();
 
-        if (course.getCapacity() != null && currentCount >= course.getCapacity()) {
+        if (course.getCapacity() != null && count >= course.getCapacity()) {
             throw new RuntimeException("Course is full");
         }
 
@@ -62,7 +62,6 @@ public class EnrollmentService {
     }
 
     public List<Enrollment> getByStudent(Integer userId) {
-
         Student student = studentRepository.findByUserId(Long.valueOf(userId))
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
@@ -71,14 +70,6 @@ public class EnrollmentService {
 
     public List<Enrollment> getByCourse(Integer courseId) {
         return enrollmentRepository.findByCourseId(courseId);
-    }
-
-    public Enrollment updateStatus(Integer id, String status) {
-        Enrollment enrollment = enrollmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
-
-        enrollment.setStatus(Enrollment.Status.valueOf(status));
-        return enrollmentRepository.save(enrollment);
     }
 
     public void delete(Integer id) {

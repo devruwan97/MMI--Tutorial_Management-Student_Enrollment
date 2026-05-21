@@ -2,14 +2,9 @@ package com.mathsmastery.platform.service;
 
 import com.mathsmastery.platform.dto.TeacherRequest;
 import com.mathsmastery.platform.dto.TeacherResponse;
-import com.mathsmastery.platform.model.Course;
-import com.mathsmastery.platform.model.CourseSchedule;
-import com.mathsmastery.platform.model.Teacher;
-import com.mathsmastery.platform.model.User;
-import com.mathsmastery.platform.repository.CourseRepository;
-import com.mathsmastery.platform.repository.CourseScheduleRepository;
-import com.mathsmastery.platform.repository.TeacherRepository;
-import com.mathsmastery.platform.repository.UserRepository;
+import com.mathsmastery.platform.dto.UnitAssignmentRequest;
+import com.mathsmastery.platform.model.*;
+import com.mathsmastery.platform.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -23,17 +18,23 @@ public class TeacherService {
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
     private final CourseScheduleRepository courseScheduleRepository;
+    private final UnitsTeachersRepository unitsTeachersRepository;
+    private final UnitRepository unitRepository;
 
     public TeacherService(
             TeacherRepository teacherRepository,
             UserRepository userRepository,
             CourseRepository courseRepository,
-            CourseScheduleRepository courseScheduleRepository
+            CourseScheduleRepository courseScheduleRepository,
+            UnitsTeachersRepository unitsTeachersRepository,
+            UnitRepository unitRepository
     ) {
         this.teacherRepository = teacherRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.courseScheduleRepository = courseScheduleRepository;
+        this.unitsTeachersRepository = unitsTeachersRepository;
+        this.unitRepository = unitRepository;
     }
 
     public TeacherResponse createTeacher(Integer userId, TeacherRequest request) {
@@ -100,6 +101,46 @@ public class TeacherService {
         schedule.setLocation("Main Campus");
 
         courseScheduleRepository.save(schedule);
+    }
+
+    public void assignUnits(UnitAssignmentRequest request) {
+
+        Teacher teacher = teacherRepository.findById(request.getTeacherId())
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        Course course = courseRepository.findById(request.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        if (request.getUnitIds() == null || request.getUnitIds().isEmpty()) {
+            throw new RuntimeException("Unit list cannot be empty");
+        }
+
+        List<UnitsTeachers> assignments = request.getUnitIds()
+                .stream()
+                .map(unitId -> new UnitsTeachers(
+                        teacher.getId(),
+                        course.getId(),
+                        unitId
+                ))
+                .toList();
+
+        unitsTeachersRepository.saveAll(assignments);
+    }
+
+    public List<Unit> getAssignedUnits(Integer teacherId) {
+
+        Teacher teacher = teacherRepository.findByUserId(Long.valueOf(teacherId))
+                .orElseThrow(() ->
+                        new RuntimeException("Teacher not found"));
+
+        List<Integer> unitIds = unitsTeachersRepository
+                .findByTeacherId(teacher.getId())
+                .stream()
+                .map(UnitsTeachers::getUnitId)
+                .distinct()
+                .toList();
+
+        return unitRepository.findByIdIn(unitIds);
     }
 
     private TeacherResponse mapToResponse(Teacher teacher) {

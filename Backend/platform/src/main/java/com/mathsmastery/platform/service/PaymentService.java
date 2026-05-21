@@ -33,10 +33,14 @@ public class PaymentService {
         Student student = studentRepository.findByUserId(request.getStudentId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        Enrollment enrollment = enrollmentRepository.findById(Math.toIntExact(request.getEnrollmentId()))
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+        Enrollment enrollment = enrollmentRepository.findById(
+                Math.toIntExact(request.getEnrollmentId())
+        ).orElseThrow(() -> new RuntimeException("Enrollment not found"));
 
-        double discount = request.getDiscountApplied() != null ? request.getDiscountApplied() : 0;
+        double discount = request.getDiscountApplied() != null
+                ? request.getDiscountApplied()
+                : 0;
+
         double finalAmount = request.getAmount() - discount;
 
         Payment payment = new Payment();
@@ -64,5 +68,9 @@ public class PaymentService {
 
         payment.setStatus(Payment.Status.valueOf(status));
         return paymentRepository.save(payment);
+    }
+
+    public List<Payment> getAll() {
+        return paymentRepository.findAll();
     }
 }

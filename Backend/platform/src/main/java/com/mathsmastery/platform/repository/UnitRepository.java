@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface UnitRepository extends JpaRepository<Unit, Integer> {
     List<Unit> findByCourseId(Integer courseId);
+
+    List<Unit> findByIdIn(List<Integer> ids);
 }

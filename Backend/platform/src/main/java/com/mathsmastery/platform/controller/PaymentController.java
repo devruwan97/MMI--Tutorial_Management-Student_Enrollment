@@ -3,10 +3,8 @@ package com.mathsmastery.platform.controller;
 import com.mathsmastery.platform.dto.PaymentRequest;
 import com.mathsmastery.platform.model.Payment;
 import com.mathsmastery.platform.service.PaymentService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +20,7 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @Operation(summary = "Create a payment")
+    @Operation(summary = "Create payment")
     @PostMapping
     public Payment create(@RequestBody PaymentRequest request) {
         return paymentService.createPayment(request);
@@ -47,5 +45,11 @@ public class PaymentController {
             @RequestParam String status
     ) {
         return paymentService.updateStatus(id, status);
+    }
+
+    @Operation(summary = "Get all payments")
+    @GetMapping
+    public List<Payment> getAll() {
+        return paymentService.getAll();
     }
 }

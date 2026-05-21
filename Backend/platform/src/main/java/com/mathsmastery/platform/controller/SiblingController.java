@@ -1,7 +1,7 @@
 package com.mathsmastery.platform.controller;
 
 import com.mathsmastery.platform.model.Sibling;
-import com.mathsmastery.platform.model.SiblingGroup;
+import com.mathsmastery.platform.model.SiblingRequest;
 import com.mathsmastery.platform.service.SiblingService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/siblings")
-@Tag(name = "Sibling API", description = "Manage sibling groups and relationships")
+@Tag(name = "Sibling API", description = "Manage sibling discount requests and relationships")
 public class SiblingController {
 
     private final SiblingService siblingService;
@@ -22,33 +22,39 @@ public class SiblingController {
         this.siblingService = siblingService;
     }
 
-    @Operation(summary = "Create a sibling group")
-    @PostMapping("/group")
-    public SiblingGroup createGroup(@RequestBody SiblingGroup group) {
-        return siblingService.createGroup(group);
+    @Operation(summary = "Request sibling discount")
+    @PostMapping("/request")
+    public SiblingRequest createRequest(@RequestBody SiblingRequest request) {
+        return siblingService.createRequest(request);
     }
 
-    @Operation(summary = "Add student to sibling group")
-    @PostMapping("/add")
-    public Sibling addSibling(@RequestBody Sibling sibling) {
-        return siblingService.addSibling(sibling);
+    @Operation(summary = "Approve sibling request")
+    @PostMapping("/approve/{requestId}")
+    public String approveRequest(@PathVariable Long requestId) {
+        siblingService.approveRequest(requestId);
+        return "Approved successfully";
     }
 
-    @Operation(summary = "Get all sibling groups")
-    @GetMapping("/groups")
-    public List<SiblingGroup> getGroups() {
-        return siblingService.getAllGroups();
+    @Operation(summary = "Reject sibling request")
+    @PostMapping("/reject/{requestId}")
+    public String rejectRequest(@PathVariable Long requestId) {
+        siblingService.rejectRequest(requestId);
+        return "Rejected successfully";
     }
 
-    @Operation(summary = "Get all sibling links")
+    @Operation(summary = "Get siblings of student")
+    @GetMapping("/student/{studentId}")
+    public List<Sibling> getByStudent(@PathVariable Long studentId) {
+        return siblingService.getByStudent(studentId);
+    }
+
     @GetMapping
     public List<Sibling> getAll() {
         return siblingService.getAllSiblings();
     }
 
-    @Operation(summary = "Get sibling group of a student")
-    @GetMapping("/student/{studentId}")
-    public List<Sibling> getByStudent(@PathVariable Long studentId) {
-        return siblingService.getByStudent(studentId);
+    @GetMapping("allRequests")
+    public List<SiblingRequest> getAllSiblingRequests() {
+        return siblingService.getAllSiblingsRequests();
     }
 }

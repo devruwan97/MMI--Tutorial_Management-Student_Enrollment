@@ -4,14 +4,14 @@ import com.mathsmastery.platform.dto.AssessmentGradeDTO;
 import com.mathsmastery.platform.model.Assessment;
 import com.mathsmastery.platform.model.AssessmentGrade;
 import com.mathsmastery.platform.model.Student;
+import com.mathsmastery.platform.model.Submission;
 import com.mathsmastery.platform.repository.AssessmentGradeRepository;
 import com.mathsmastery.platform.repository.AssessmentRepository;
 import com.mathsmastery.platform.repository.StudentRepository;
+import com.mathsmastery.platform.repository.SubmissionRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AssessmentGradeService {
@@ -19,52 +19,37 @@ public class AssessmentGradeService {
     private final AssessmentGradeRepository gradeRepository;
     private final AssessmentRepository assessmentRepository;
     private final StudentRepository studentRepository;
+    private final SubmissionRepository submissionRepository;
 
-    public AssessmentGradeService(AssessmentGradeRepository gradeRepository, AssessmentRepository assessmentRepository, StudentRepository studentRepository) {
+    public AssessmentGradeService(
+            AssessmentGradeRepository gradeRepository,
+            AssessmentRepository assessmentRepository,
+            StudentRepository studentRepository,
+            SubmissionRepository submissionRepository
+    ) {
         this.gradeRepository = gradeRepository;
         this.assessmentRepository = assessmentRepository;
         this.studentRepository = studentRepository;
+        this.submissionRepository = submissionRepository;
     }
 
     public List<AssessmentGradeDTO> getGradesByAssessment(Integer assessmentId) {
 
         List<AssessmentGrade> grades =
-                gradeRepository.findByAssessmentId(assessmentId);
+                gradeRepository.findByAssessment_Id(assessmentId);
 
-        List<AssessmentGradeDTO> result = new ArrayList<>();
-
-        for (AssessmentGrade g : grades) {
-            AssessmentGradeDTO dto = new AssessmentGradeDTO();
-            dto.setId(g.getId());
-            dto.setAssessmentId(g.getAssessment().getId());
-            dto.setStudentId(g.getStudent().getId());
-            dto.setMarks(g.getMarks());
-            dto.setGrade(g.getGrade());
-            result.add(dto);
-        }
-
-        return result;
+        return grades.stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
     public AssessmentGradeDTO getStudentGrade(Integer assessmentId, Integer studentId) {
 
-        Optional<AssessmentGrade> optional =
-                gradeRepository.findByAssessmentIdAndStudentId(assessmentId, studentId);
+        AssessmentGrade grade = gradeRepository
+                .findByAssessment_IdAndStudent_Id(assessmentId, studentId)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
 
-        if (optional.isEmpty()) {
-            throw new RuntimeException("Grade not found");
-        }
-
-        AssessmentGrade g = optional.get();
-
-        AssessmentGradeDTO dto = new AssessmentGradeDTO();
-        dto.setId(g.getId());
-        dto.setAssessmentId(g.getAssessment().getId());
-        dto.setStudentId(g.getStudent().getId());
-        dto.setMarks(g.getMarks());
-        dto.setGrade(g.getGrade());
-
-        return dto;
+        return mapToDTO(grade);
     }
 
     public AssessmentGradeDTO createGrade(AssessmentGradeDTO dto) {
@@ -75,8 +60,14 @@ public class AssessmentGradeService {
         Student student = studentRepository.findById(Long.valueOf(dto.getStudentId()))
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        AssessmentGrade grade = new AssessmentGrade();
+        if (gradeRepository.existsByAssessment_IdAndStudent_Id(
+                assessment.getId(),
+                student.getId().intValue()
+        )) {
+            throw new RuntimeException("Grade already exists. Use update.");
+        }
 
+        AssessmentGrade grade = new AssessmentGrade();
         grade.setAssessment(assessment);
         grade.setStudent(student);
         grade.setMarks(dto.getMarks());
@@ -84,47 +75,58 @@ public class AssessmentGradeService {
 
         AssessmentGrade saved = gradeRepository.save(grade);
 
-        AssessmentGradeDTO response = new AssessmentGradeDTO();
-        response.setId(saved.getId());
-        response.setAssessmentId(assessment.getId());
-        response.setStudentId(student.getId());
-        response.setMarks(saved.getMarks());
-        response.setGrade(saved.getGrade());
+        submissionRepository
+                .findByAssessmentIdAndStudentId(
+                        assessment.getId(),
+                        student.getId().intValue()
+                )
+                .ifPresent(sub -> {
+                    sub.setStatus(Submission.Status.GRADED);
+                    submissionRepository.save(sub);
+                });
 
-        return response;
+        return mapToDTO(saved);
     }
 
     public AssessmentGradeDTO updateGrade(Integer gradeId, AssessmentGradeDTO dto) {
 
-        Optional<AssessmentGrade> optional =
-                gradeRepository.findById(gradeId);
+        AssessmentGrade grade = gradeRepository.findById(gradeId)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
 
-        if (optional.isEmpty()) {
-            throw new RuntimeException("Grade not found");
+        if (dto.getMarks() != null) {
+            grade.setMarks(dto.getMarks());
+            grade.setGrade(calculateGrade(dto.getMarks()));
         }
 
-        AssessmentGrade grade = optional.get();
+        AssessmentGrade saved = gradeRepository.save(grade);
 
-        grade.setMarks(dto.getMarks());
+        submissionRepository
+                .findByAssessmentIdAndStudentId(
+                        grade.getAssessment().getId(),
+                        grade.getStudent().getId().intValue()
+                )
+                .ifPresent(sub -> {
+                    sub.setStatus(Submission.Status.GRADED);
+                    submissionRepository.save(sub);
+                });
 
-        grade.setGrade(calculateGrade(dto.getMarks()));
-
-        AssessmentGrade updated = gradeRepository.save(grade);
-
-        AssessmentGradeDTO response = new AssessmentGradeDTO();
-        response.setId(updated.getId());
-        response.setAssessmentId(updated.getAssessment().getId());
-        response.setStudentId(updated.getStudent().getId());
-        response.setMarks(updated.getMarks());
-        response.setGrade(updated.getGrade());
-
-        return response;
+        return mapToDTO(saved);
     }
+
     public void deleteGrade(Integer gradeId) {
 
-        if (!gradeRepository.existsById(gradeId)) {
-            throw new RuntimeException("Grade not found");
-        }
+        AssessmentGrade grade = gradeRepository.findById(gradeId)
+                .orElseThrow(() -> new RuntimeException("Grade not found"));
+
+        submissionRepository
+                .findByAssessmentIdAndStudentId(
+                        grade.getAssessment().getId(),
+                        grade.getStudent().getId().intValue()
+                )
+                .ifPresent(sub -> {
+                    sub.setStatus(Submission.Status.PENDING);
+                    submissionRepository.save(sub);
+                });
 
         gradeRepository.deleteById(gradeId);
     }
@@ -139,5 +141,18 @@ public class AssessmentGradeService {
         if (marks >= 40) return "D";
 
         return "F";
+    }
+
+    private AssessmentGradeDTO mapToDTO(AssessmentGrade g) {
+
+        AssessmentGradeDTO dto = new AssessmentGradeDTO();
+
+        dto.setId(g.getId());
+        dto.setAssessmentId(g.getAssessment().getId());
+        dto.setStudentId(g.getStudent().getId());
+        dto.setMarks(g.getMarks());
+        dto.setGrade(g.getGrade());
+
+        return dto;
     }
 }

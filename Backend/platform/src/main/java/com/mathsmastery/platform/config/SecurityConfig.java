@@ -33,17 +33,10 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",
-                                "/api/payments/**",
-                                "/api/units/**",
-                                "/swagger-ui/**",
-                                "/api/assessment-grades/**",
-                                "/api/submissions/**",
-                                "/api/dashboard/**",
+                                "/api/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        // ROLE BASED ACCESS
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/teacher/**").hasAuthority("teacher")
                         .requestMatchers("/api/student/**").hasAuthority("student")
