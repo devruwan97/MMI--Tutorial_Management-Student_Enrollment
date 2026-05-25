@@ -23,6 +23,7 @@ public class StudentGradeService {
     private final UnitRepository unitRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final TeacherRepository teacherRepository;
+    private final NotificationService notificationService;
 
     public StudentGrade addResult(StudentGradeDTO dto, Integer teacherId) {
 
@@ -53,7 +54,15 @@ public class StudentGradeService {
         grade.setGradeCode(gradeMaster);
         grade.setGradedAt(LocalDateTime.now());
 
-        return gradeRepository.save(grade);
+        StudentGrade saved = gradeRepository.save(grade);
+
+        notificationService.createNotification(
+                Long.valueOf(student.getId()),
+                "Your unit has been graded. Score: "
+                        + dto.getScore() + " | Grade: " + gradeMaster
+        );
+
+        return saved;
     }
 
     public List<StudentGrade> getStudentResults(Long studentId) {
@@ -85,14 +94,11 @@ public class StudentGradeService {
     }
 
     private String calculateGrade(Double marks) {
-
         if (marks == null) return "N/A";
-
         if (marks >= 85) return "A";
         if (marks >= 70) return "B";
         if (marks >= 55) return "C";
         if (marks >= 40) return "D";
-
         return "F";
     }
 }

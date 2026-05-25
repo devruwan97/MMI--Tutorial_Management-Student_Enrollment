@@ -20,21 +20,23 @@ public class AssessmentGradeService {
     private final AssessmentRepository assessmentRepository;
     private final StudentRepository studentRepository;
     private final SubmissionRepository submissionRepository;
+    private final NotificationService notificationService;
 
     public AssessmentGradeService(
             AssessmentGradeRepository gradeRepository,
             AssessmentRepository assessmentRepository,
             StudentRepository studentRepository,
-            SubmissionRepository submissionRepository
+            SubmissionRepository submissionRepository,
+            NotificationService notificationService
     ) {
         this.gradeRepository = gradeRepository;
         this.assessmentRepository = assessmentRepository;
         this.studentRepository = studentRepository;
         this.submissionRepository = submissionRepository;
+        this.notificationService = notificationService;
     }
 
     public List<AssessmentGradeDTO> getGradesByAssessment(Integer assessmentId) {
-
         List<AssessmentGrade> grades =
                 gradeRepository.findByAssessment_Id(assessmentId);
 
@@ -44,7 +46,6 @@ public class AssessmentGradeService {
     }
 
     public AssessmentGradeDTO getStudentGrade(Integer assessmentId, Integer studentId) {
-
         AssessmentGrade grade = gradeRepository
                 .findByAssessment_IdAndStudent_Id(assessmentId, studentId)
                 .orElseThrow(() -> new RuntimeException("Grade not found"));
@@ -85,6 +86,11 @@ public class AssessmentGradeService {
                     submissionRepository.save(sub);
                 });
 
+        notificationService.createNotification(
+                Long.valueOf(student.getId()),
+                "New grade published for assessment ID: " + assessment.getId()
+        );
+
         return mapToDTO(saved);
     }
 
@@ -110,6 +116,12 @@ public class AssessmentGradeService {
                     submissionRepository.save(sub);
                 });
 
+        notificationService.createNotification(
+                Long.valueOf(grade.getStudent().getId()),
+                "Your assessment grade has been updated for assessment ID: "
+                        + grade.getAssessment().getId()
+        );
+
         return mapToDTO(saved);
     }
 
@@ -132,14 +144,11 @@ public class AssessmentGradeService {
     }
 
     private String calculateGrade(Double marks) {
-
         if (marks == null) return "N/A";
-
         if (marks >= 85) return "A";
         if (marks >= 70) return "B";
         if (marks >= 55) return "C";
         if (marks >= 40) return "D";
-
         return "F";
     }
 

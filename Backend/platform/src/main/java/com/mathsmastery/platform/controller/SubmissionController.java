@@ -18,39 +18,38 @@ public class SubmissionController {
         this.submissionService = submissionService;
     }
 
+    @PostMapping("/submit")
+    public ResponseEntity<SubmissionDTO> submitAssessment(
+            @RequestBody SubmissionDTO dto
+    ) {
+        return ResponseEntity.ok(submissionService.submitAssessment(dto));
+    }
+
     @GetMapping("/assessment/{assessmentId}")
     public ResponseEntity<List<SubmissionDTO>> getByAssessment(
             @PathVariable Integer assessmentId
     ) {
-        return ResponseEntity.ok(
-                submissionService.getByAssessment(assessmentId)
-        );
+        return ResponseEntity.ok(submissionService.getByAssessment(assessmentId));
     }
 
     @GetMapping("/student/{studentId}")
     public ResponseEntity<List<SubmissionDTO>> getByStudent(
             @PathVariable Integer studentId
     ) {
-        return ResponseEntity.ok(
-                submissionService.getByStudent(studentId)
-        );
+        return ResponseEntity.ok(submissionService.getByStudent(studentId));
     }
 
     @GetMapping("/assessment/{assessmentId}/pending")
     public ResponseEntity<List<SubmissionDTO>> getPendingSubmissions(
             @PathVariable Integer assessmentId
     ) {
-        return ResponseEntity.ok(
-                submissionService.getPendingByAssessment(assessmentId)
-        );
+        return ResponseEntity.ok(submissionService.getPendingByAssessment(assessmentId));
     }
 
     @GetMapping("/assessment/{assessmentId}/graded")
     public ResponseEntity<List<SubmissionDTO>> getGradedSubmissions(
             @PathVariable Integer assessmentId
     ) {
-        return ResponseEntity.ok(
-                submissionService.getGradedByAssessment(assessmentId)
-        );
+        return ResponseEntity.ok(submissionService.getGradedByAssessment(assessmentId));
     }
 }
