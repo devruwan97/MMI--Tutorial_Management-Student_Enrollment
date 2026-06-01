@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
                         .requestMatchers("/api/teacher/**").hasAuthority("teacher")
                         .requestMatchers("/api/student/**").hasAuthority("student")
+                        .requestMatchers("/api/management/**").hasAuthority("management")
 
                         .anyRequest().authenticated()
                 )
@@ -56,7 +57,7 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of("http://mmifrontend.s3-website-ap-southeast-2.amazonaws.com","http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

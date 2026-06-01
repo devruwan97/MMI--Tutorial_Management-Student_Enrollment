@@ -40,7 +40,7 @@ public class SiblingService {
 
         for (User admin : admins) {
             notificationService.createNotification(
-                    Long.valueOf(admin.getId()),
+                    savedRequest.getRequesterStudentId(),
                     "New sibling request submitted by Student ID: "
                             + savedRequest.getRequesterStudentId()
             );

@@ -72,6 +72,14 @@ public class EnrollmentService {
         return enrollmentRepository.findByCourseId(courseId);
     }
 
+    public Enrollment updateStatus(Integer id, String status) {
+        Enrollment enrollment = enrollmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+
+        enrollment.setStatus(Enrollment.Status.valueOf(status));
+        return enrollmentRepository.save(enrollment);
+    }
+
     public void delete(Integer id) {
         enrollmentRepository.deleteById(id);
     }

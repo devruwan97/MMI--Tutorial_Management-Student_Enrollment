@@ -20,15 +20,13 @@ public class NotificationService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
 
-    public Notification createNotification(Long studentId, String message) {
-
-        Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found: " + studentId));
-
-        Long userId = Long.valueOf(student.getUser().getId());
+    public Notification createNotification(Long userId, String message) {
 
         User user = userRepository.findById(Math.toIntExact(userId))
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        studentRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Student not found: " + userId));
 
         Notification notification = new Notification();
         notification.setUser(user);

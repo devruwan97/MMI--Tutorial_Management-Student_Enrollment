@@ -44,6 +44,15 @@ public class EnrollmentController {
         return enrollmentService.getByCourse(courseId);
     }
 
+    @Operation(summary = "Update enrollment status")
+    @PutMapping("/{id}")
+    public Enrollment updateStatus(
+            @PathVariable Integer id,
+            @RequestParam String status
+    ) {
+        return enrollmentService.updateStatus(id, status);
+    }
+
     @Operation(summary = "Delete enrollment")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
