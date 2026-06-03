@@ -25,4 +25,10 @@ public class UnitController {
     public UnitResponse getUnits(@PathVariable Integer courseId) {
         return unitService.getUnitsByCourse(courseId);
     }
+
+    @Operation(summary = "Get all units for a student")
+    @GetMapping("/student/{userId}/units")
+    public UnitResponse getUnitsByStudent(@PathVariable Integer userId) {
+        return unitService.getUnitsByStudent(userId);
+    }
 }
